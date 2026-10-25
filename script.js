@@ -5,6 +5,16 @@
   const lerp = (a, b, t) => a + (b - a) * t;
   const smooth = t => t * t * (3 - 2 * t);
 
+  /* poses: [yaw, shoulder, elbow, wrist, roll, grip, arm-x]  one per page section */
+  const POSES = [
+    [ 0.30,  0.05, -0.55,  0.45,  0.0, 0.55,  1.0],  // hero
+    [-0.60,  0.75, -1.30,  0.70,  1.2, 0.15, -4.6],  // skills
+    [ 1.10, -0.45,  1.50, -0.85, -1.0, 0.85,  4.8],  // projects
+    [-1.20,  0.95, -0.95,  1.00,  2.2, 0.10, -4.8],  // achievements
+    [ 0.40, -0.70,  1.80, -1.10,  0.6, 0.70,  4.8],  // experience
+    [ 0.00,  0.25, -0.45,  0.30,  0.0, 0.40,  0.0],  // contact
+  ];
+
   /* ---------- scroll progress + nav highlight ---------- */
   const bar = $('.progress span');
   const links = $$('.nav a');
@@ -57,7 +67,7 @@
   const canvas = $('#bg3d');
   let gl = false;
   try { gl = !!(window.THREE && document.createElement('canvas').getContext('webgl')); } catch (_) {}
-  if (!gl) return;
+  function init3d() {
 
   const C = { green: 0x2BFF88, yellow: 0xFFD23F, red: 0xFF4D6D, blue: 0x2E9BFF, white: 0xF4F7FB };
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
@@ -156,15 +166,6 @@
   const pts = new THREE.Points(pGeo, new THREE.PointsMaterial({ size: 0.07, vertexColors: true, transparent: true, opacity: 0.8 }));
   scene.add(pts);
 
-  /* poses: [yaw, shoulder, elbow, wrist, roll, grip, arm-x]  one per page section */
-  const POSES = [
-    [ 0.30,  0.05, -0.55,  0.45,  0.0, 0.55,  1.0],  // hero
-    [-0.60,  0.75, -1.30,  0.70,  1.2, 0.15, -4.6],  // skills
-    [ 1.10, -0.45,  1.50, -0.85, -1.0, 0.85,  4.8],  // projects
-    [-1.20,  0.95, -0.95,  1.00,  2.2, 0.10, -4.8],  // achievements
-    [ 0.40, -0.70,  1.80, -1.10,  0.6, 0.70,  4.8],  // experience
-    [ 0.00,  0.25, -0.45,  0.30,  0.0, 0.40,  0.0],  // contact
-  ];
   const cur = POSES[0].slice();
   let smoothP = 0;
 
@@ -209,4 +210,35 @@
     requestAnimationFrame(frame);
   }
   frame();
+  }
+
+  /* ---------- 2D fallback arm (no WebGL) ---------- */
+  function fallback2d() {
+    canvas.style.display = 'none';
+    const d = document.createElement('div'); d.className = 'arm2d'; d.setAttribute('aria-hidden', 'true');
+    d.innerHTML = `<svg viewBox="0 0 400 520" stroke-linecap="round" stroke-linejoin="round">
+      <ellipse cx="200" cy="500" rx="150" ry="14" fill="none" stroke="#2E9BFF" stroke-opacity=".5" stroke-width="3"/>
+      <rect x="130" y="470" width="140" height="28" rx="8" fill="#172036" stroke="#F4F7FB" stroke-opacity=".6" stroke-width="3"/>
+      <g transform="translate(200 470)"><g id="a-sh"><path d="M0 0V-170" stroke="#172036" stroke-width="34"/><path d="M0 0V-170" stroke="#F4F7FB" stroke-opacity=".5" stroke-width="3"/><path d="M0 -20V-110" stroke="#FFD23F" stroke-width="8"/>
+        <g transform="translate(0 -170)"><g id="a-el"><path d="M0 0V-140" stroke="#172036" stroke-width="26"/><path d="M0 0V-140" stroke="#F4F7FB" stroke-opacity=".5" stroke-width="3"/>
+          <g transform="translate(0 -140)"><g id="a-wr"><path d="M0 0V-46" stroke="#F4F7FB" stroke-width="12"/><path d="M-16 -46H16M-16 -46V-72M16 -46V-72" fill="none" stroke="#2BFF88" stroke-width="7"/></g><circle r="14" fill="#06080d" stroke="#FF4D6D" stroke-width="6"/></g>
+        </g><circle r="18" fill="#06080d" stroke="#2E9BFF" stroke-width="6"/></g>
+      </g><circle r="24" fill="#06080d" stroke="#FFD23F" stroke-width="7"/></g></svg>`;
+    document.body.prepend(d);
+    const sh = d.querySelector('#a-sh'), el = d.querySelector('#a-el'), wr = d.querySelector('#a-wr');
+    const cur = POSES[0].slice(); let sp = 0;
+    (function loop() {
+      sp = lerp(sp, scrollP, reduce ? 1 : 0.07);
+      const n = POSES.length - 1, f = sp * n, i = Math.min(n - 1, Math.floor(f)), k = smooth(f - i);
+      for (let j = 0; j < 7; j++) cur[j] = lerp(POSES[i][j], POSES[i + 1][j], k);
+      sh.setAttribute('transform', `rotate(${cur[1] * 50})`);
+      el.setAttribute('transform', `rotate(${cur[2] * 50})`);
+      wr.setAttribute('transform', `rotate(${cur[3] * 50})`);
+      const wide = innerWidth > 900;
+      d.style.transform = `translateX(calc(-50% + ${wide ? cur[6] * innerWidth * 0.06 : 0}px))`;
+      requestAnimationFrame(loop);
+    })();
+  }
+
+  if (gl) { try { init3d(); } catch (e) { console.warn(e); fallback2d(); } } else fallback2d();
 })();
