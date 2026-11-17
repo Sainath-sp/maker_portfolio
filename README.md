@@ -19,11 +19,11 @@ Live at `https://<your-username>.github.io/maker_portfolio/`
 | GitHub link | `https://github.com/sainath-sp` in `index.html` (2 places) — change if different |
 | Real project photos | In `index.html`, each project has a `.thumb` block — replace its `<svg>` with `<img src="assets/projects/arm.jpg" alt="Robotic arm">` |
 | Arm poses per section | `POSES` array in `script.js` |
-| Colours | `:root` tokens at the top of `styles.css` (green, yellow, red, blue) |
+| Colours | `:root` tokens at the top of `styles.css` (bg, steel, soft, tx, amber, clay) |
 
 ## Design rules
 - Fonts: **Space Grotesk** (everything) + **JetBrains Mono** (small labels only). Self-hosted in `vendor/`.
-- Palette: green `#2BFF88`, yellow `#FFD23F`, red `#FF4D6D`, blue `#2E9BFF`, white `#F4F7FB` on `#06080D`.
+- Palette: amber `#F2A33A`, brick `#C4685F`, text `#ECEBEE`, muted `#AAA8AD`, steel `#606467`, surface `#313B44` on `#1C1D22`.
 - Every heading highlight uses the same `.hl` gradient; every card title is white `h3`.
 
 ## Structure

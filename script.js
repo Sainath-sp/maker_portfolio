@@ -69,7 +69,7 @@
   try { gl = !!(window.THREE && document.createElement('canvas').getContext('webgl')); } catch (_) {}
   function init3d() {
 
-  const C = { green: 0x27DBDB, yellow: 0xD2C2A7, red: 0xBA644E, blue: 0xA89D89, white: 0xD2C2A7 };
+  const C = { hl: 0xF2A33A, txt: 0xECEBEE, sec: 0xC4685F, mu: 0xAAA8AD, txt2: 0xECEBEE };
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   const scene = new THREE.Scene();
@@ -78,13 +78,13 @@
   /* lights */
   scene.add(new THREE.AmbientLight(0xffffff, 1.1));
   const key = new THREE.DirectionalLight(0xffffff, 2.2); key.position.set(5, 9, 7); scene.add(key);
-  [[C.green, -7, 2, 4], [C.blue, 7, 3, 3], [C.red, 0, -1, 7]].forEach(([c, x, y, z]) => {
+  [[C.hl, -7, 2, 4], [C.mu, 7, 3, 3], [C.sec, 0, -1, 7]].forEach(([c, x, y, z]) => {
     const l = new THREE.PointLight(c, 160, 24, 2); l.position.set(x, y, z); scene.add(l);
   });
 
   /* materials */
-  const bodyMat = new THREE.MeshStandardMaterial({ color: 0x5D625E, metalness: 0.55, roughness: 0.38 });
-  const edgeMat = new THREE.LineBasicMaterial({ color: C.white, transparent: true, opacity: 0.45 });
+  const bodyMat = new THREE.MeshStandardMaterial({ color: 0x606467, metalness: 0.55, roughness: 0.38 });
+  const edgeMat = new THREE.LineBasicMaterial({ color: C.txt2, transparent: true, opacity: 0.45 });
   const glow = c => new THREE.MeshStandardMaterial({ color: c, emissive: c, emissiveIntensity: 0.9, metalness: 0.2, roughness: 0.35 });
 
   function part(geo, mat = bodyMat) {
@@ -103,7 +103,7 @@
     const g = new THREE.Group();
     const geo = new THREE.CylinderGeometry(r, r, h, 28); geo.rotateX(Math.PI / 2);
     g.add(new THREE.Mesh(geo, glow(color)));
-    const ring = new THREE.Mesh(new THREE.TorusGeometry(r + 0.02, 0.04, 8, 36), new THREE.MeshBasicMaterial({ color: C.white }));
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(r + 0.02, 0.04, 8, 36), new THREE.MeshBasicMaterial({ color: C.txt2 }));
     ring.position.z = h / 2; g.add(ring);
     const ring2 = ring.clone(); ring2.position.z = -h / 2; g.add(ring2);
     return g;
@@ -114,7 +114,7 @@
 
   /* base */
   const base = part(new THREE.CylinderGeometry(1.5, 1.7, 0.4, 36)); base.position.y = 0.2; root.add(base);
-  const baseRing = new THREE.Mesh(new THREE.TorusGeometry(1.35, 0.06, 8, 60), new THREE.MeshBasicMaterial({ color: C.green }));
+  const baseRing = new THREE.Mesh(new THREE.TorusGeometry(1.35, 0.06, 8, 60), new THREE.MeshBasicMaterial({ color: C.hl }));
   baseRing.rotation.x = Math.PI / 2; baseRing.position.y = 0.42; root.add(baseRing);
 
   /* kinematic chain */
@@ -122,33 +122,33 @@
   const turret = part(new THREE.CylinderGeometry(0.8, 0.95, 0.9, 6)); turret.position.y = 0.45; yaw.add(turret);
 
   const shoulder = new THREE.Group(); shoulder.position.y = 1.15; yaw.add(shoulder);
-  shoulder.add(joint(C.yellow, 0.55, 1.1));
+  shoulder.add(joint(C.txt, 0.55, 1.1));
   shoulder.add(link(L1, 0.6, 0.6));
-  const sStripe = new THREE.Mesh(new THREE.BoxGeometry(0.62, L1 * 0.5, 0.62), glow(C.yellow)); sStripe.scale.set(1.01, 1, 0.3);
+  const sStripe = new THREE.Mesh(new THREE.BoxGeometry(0.62, L1 * 0.5, 0.62), glow(C.txt)); sStripe.scale.set(1.01, 1, 0.3);
   sStripe.position.y = L1 * 0.5; shoulder.add(sStripe);
 
   const elbow = new THREE.Group(); elbow.position.y = L1; shoulder.add(elbow);
-  elbow.add(joint(C.blue, 0.48, 0.95));
+  elbow.add(joint(C.mu, 0.48, 0.95));
   elbow.add(link(L2, 0.48, 0.48));
 
   const wrist = new THREE.Group(); wrist.position.y = L2; elbow.add(wrist);
-  wrist.add(joint(C.red, 0.38, 0.75));
+  wrist.add(joint(C.sec, 0.38, 0.75));
   const roll = new THREE.Group(); wrist.add(roll);
   roll.add(link(L3, 0.34, 0.34));
   const hand = new THREE.Group(); hand.position.y = L3; roll.add(hand);
   const palm = part(new THREE.BoxGeometry(0.9, 0.2, 0.5)); hand.add(palm);
   const fingerGeo = new THREE.BoxGeometry(0.14, 0.7, 0.3); fingerGeo.translate(0, 0.35, 0);
-  const fL = part(fingerGeo, glow(C.green)); const fR = part(fingerGeo, glow(C.green));
+  const fL = part(fingerGeo, glow(C.hl)); const fR = part(fingerGeo, glow(C.hl));
   fL.position.y = fR.position.y = 0.1; hand.add(fL, fR);
-  const tip = new THREE.Mesh(new THREE.SphereGeometry(0.12, 16, 16), new THREE.MeshBasicMaterial({ color: C.yellow }));
+  const tip = new THREE.Mesh(new THREE.SphereGeometry(0.12, 16, 16), new THREE.MeshBasicMaterial({ color: C.txt }));
   tip.position.y = 0.95; hand.add(tip);
-  const tipLight = new THREE.PointLight(C.yellow, 25, 6, 2); tipLight.position.y = 1; hand.add(tipLight);
+  const tipLight = new THREE.PointLight(C.txt, 25, 6, 2); tipLight.position.y = 1; hand.add(tipLight);
 
   /* floor: grid + spinning rings */
-  const grid = new THREE.GridHelper(40, 40, C.blue, C.blue);
+  const grid = new THREE.GridHelper(40, 40, C.mu, C.mu);
   grid.material.transparent = true; grid.material.opacity = 0.14; grid.position.y = -0.01; root.add(grid);
   const rings = new THREE.Group(); root.add(rings);
-  [[3, C.green], [4.4, C.yellow], [5.8, C.blue]].forEach(([r, c], i) => {
+  [[3, C.hl], [4.4, C.txt], [5.8, C.mu]].forEach(([r, c], i) => {
     const m = new THREE.Mesh(new THREE.RingGeometry(r, r + 0.035, 90, 1), new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: 0.55, side: THREE.DoubleSide }));
     m.rotation.x = -Math.PI / 2; m.position.y = 0.01; m.userData.s = (i % 2 ? -1 : 1) * (0.1 + i * 0.05); rings.add(m);
     if (i === 1) { const d = new THREE.Mesh(new THREE.SphereGeometry(0.1, 12, 12), new THREE.MeshBasicMaterial({ color: c })); d.position.set(r, 0, 0); m.add(d); d.rotation.x = Math.PI / 2; }
@@ -156,7 +156,7 @@
 
   /* floating particles */
   const N = 160, pos = new Float32Array(N * 3), col = new Float32Array(N * 3);
-  const pal = [C.green, C.yellow, C.red, C.blue, C.white].map(h => new THREE.Color(h));
+  const pal = [C.hl, C.txt, C.sec, C.mu, C.txt2].map(h => new THREE.Color(h));
   for (let i = 0; i < N; i++) {
     pos.set([(Math.random() - 0.5) * 22, Math.random() * 12 - 2, (Math.random() - 0.5) * 12 - 2], i * 3);
     const c = pal[i % 5]; col.set([c.r, c.g, c.b], i * 3);
@@ -198,7 +198,7 @@
     fL.position.x = -0.12 - cur[5] * 0.28; fR.position.x = 0.12 + cur[5] * 0.28;
     root.position.x = narrow ? 0 : lerp(root.position.x, cur[6], 0.12);
 
-    baseRing.material.color.setHex([C.green, C.yellow, C.red, C.blue][Math.floor(smoothP * 4.999) % 4]);
+    baseRing.material.color.setHex([C.hl, C.txt, C.sec, C.mu][Math.floor(smoothP * 4.999) % 4]);
     rings.children.forEach(r => (r.rotation.z += r.userData.s * 0.01 * idle));
     pts.rotation.y = t * 0.02 * idle; pts.position.y = -smoothP * 3;
 
@@ -217,13 +217,13 @@
     canvas.style.display = 'none';
     const d = document.createElement('div'); d.className = 'arm2d'; d.setAttribute('aria-hidden', 'true');
     d.innerHTML = `<svg viewBox="0 0 400 520" stroke-linecap="round" stroke-linejoin="round">
-      <ellipse cx="200" cy="500" rx="150" ry="14" fill="none" stroke="#A89D89" stroke-opacity=".5" stroke-width="3"/>
-      <rect x="130" y="470" width="140" height="28" rx="8" fill="#5D625E" stroke="#D2C2A7" stroke-opacity=".6" stroke-width="3"/>
-      <g transform="translate(200 470)"><g id="a-sh"><path d="M0 0V-170" stroke="#5D625E" stroke-width="34"/><path d="M0 0V-170" stroke="#D2C2A7" stroke-opacity=".5" stroke-width="3"/><path d="M0 -20V-110" stroke="#D2C2A7" stroke-width="8"/>
-        <g transform="translate(0 -170)"><g id="a-el"><path d="M0 0V-140" stroke="#5D625E" stroke-width="26"/><path d="M0 0V-140" stroke="#D2C2A7" stroke-opacity=".5" stroke-width="3"/>
-          <g transform="translate(0 -140)"><g id="a-wr"><path d="M0 0V-46" stroke="#D2C2A7" stroke-width="12"/><path d="M-16 -46H16M-16 -46V-72M16 -46V-72" fill="none" stroke="#27DBDB" stroke-width="7"/></g><circle r="14" fill="#0F2D38" stroke="#BA644E" stroke-width="6"/></g>
-        </g><circle r="18" fill="#0F2D38" stroke="#A89D89" stroke-width="6"/></g>
-      </g><circle r="24" fill="#0F2D38" stroke="#D2C2A7" stroke-width="7"/></g></svg>`;
+      <ellipse cx="200" cy="500" rx="150" ry="14" fill="none" stroke="#AAA8AD" stroke-opacity=".5" stroke-width="3"/>
+      <rect x="130" y="470" width="140" height="28" rx="8" fill="#606467" stroke="#ECEBEE" stroke-opacity=".6" stroke-width="3"/>
+      <g transform="translate(200 470)"><g id="a-sh"><path d="M0 0V-170" stroke="#606467" stroke-width="34"/><path d="M0 0V-170" stroke="#ECEBEE" stroke-opacity=".5" stroke-width="3"/><path d="M0 -20V-110" stroke="#ECEBEE" stroke-width="8"/>
+        <g transform="translate(0 -170)"><g id="a-el"><path d="M0 0V-140" stroke="#606467" stroke-width="26"/><path d="M0 0V-140" stroke="#ECEBEE" stroke-opacity=".5" stroke-width="3"/>
+          <g transform="translate(0 -140)"><g id="a-wr"><path d="M0 0V-46" stroke="#ECEBEE" stroke-width="12"/><path d="M-16 -46H16M-16 -46V-72M16 -46V-72" fill="none" stroke="#F2A33A" stroke-width="7"/></g><circle r="14" fill="#1C1D22" stroke="#C4685F" stroke-width="6"/></g>
+        </g><circle r="18" fill="#1C1D22" stroke="#AAA8AD" stroke-width="6"/></g>
+      </g><circle r="24" fill="#1C1D22" stroke="#ECEBEE" stroke-width="7"/></g></svg>`;
     document.body.prepend(d);
     const sh = d.querySelector('#a-sh'), el = d.querySelector('#a-el'), wr = d.querySelector('#a-wr');
     const cur = POSES[0].slice(); let sp = 0;
