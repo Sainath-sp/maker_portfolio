@@ -69,7 +69,7 @@
   try { gl = !!(window.THREE && document.createElement('canvas').getContext('webgl')); } catch (_) {}
   function init3d() {
 
-  const C = { green: 0x2BFF88, yellow: 0xFFD23F, red: 0xFF4D6D, blue: 0x2E9BFF, white: 0xF4F7FB };
+  const C = { green: 0x27DBDB, yellow: 0xD2C2A7, red: 0xBA644E, blue: 0xA89D89, white: 0xD2C2A7 };
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   const scene = new THREE.Scene();
@@ -83,7 +83,7 @@
   });
 
   /* materials */
-  const bodyMat = new THREE.MeshStandardMaterial({ color: 0x172036, metalness: 0.55, roughness: 0.38 });
+  const bodyMat = new THREE.MeshStandardMaterial({ color: 0x5D625E, metalness: 0.55, roughness: 0.38 });
   const edgeMat = new THREE.LineBasicMaterial({ color: C.white, transparent: true, opacity: 0.45 });
   const glow = c => new THREE.MeshStandardMaterial({ color: c, emissive: c, emissiveIntensity: 0.9, metalness: 0.2, roughness: 0.35 });
 
@@ -217,13 +217,13 @@
     canvas.style.display = 'none';
     const d = document.createElement('div'); d.className = 'arm2d'; d.setAttribute('aria-hidden', 'true');
     d.innerHTML = `<svg viewBox="0 0 400 520" stroke-linecap="round" stroke-linejoin="round">
-      <ellipse cx="200" cy="500" rx="150" ry="14" fill="none" stroke="#2E9BFF" stroke-opacity=".5" stroke-width="3"/>
-      <rect x="130" y="470" width="140" height="28" rx="8" fill="#172036" stroke="#F4F7FB" stroke-opacity=".6" stroke-width="3"/>
-      <g transform="translate(200 470)"><g id="a-sh"><path d="M0 0V-170" stroke="#172036" stroke-width="34"/><path d="M0 0V-170" stroke="#F4F7FB" stroke-opacity=".5" stroke-width="3"/><path d="M0 -20V-110" stroke="#FFD23F" stroke-width="8"/>
-        <g transform="translate(0 -170)"><g id="a-el"><path d="M0 0V-140" stroke="#172036" stroke-width="26"/><path d="M0 0V-140" stroke="#F4F7FB" stroke-opacity=".5" stroke-width="3"/>
-          <g transform="translate(0 -140)"><g id="a-wr"><path d="M0 0V-46" stroke="#F4F7FB" stroke-width="12"/><path d="M-16 -46H16M-16 -46V-72M16 -46V-72" fill="none" stroke="#2BFF88" stroke-width="7"/></g><circle r="14" fill="#06080d" stroke="#FF4D6D" stroke-width="6"/></g>
-        </g><circle r="18" fill="#06080d" stroke="#2E9BFF" stroke-width="6"/></g>
-      </g><circle r="24" fill="#06080d" stroke="#FFD23F" stroke-width="7"/></g></svg>`;
+      <ellipse cx="200" cy="500" rx="150" ry="14" fill="none" stroke="#A89D89" stroke-opacity=".5" stroke-width="3"/>
+      <rect x="130" y="470" width="140" height="28" rx="8" fill="#5D625E" stroke="#D2C2A7" stroke-opacity=".6" stroke-width="3"/>
+      <g transform="translate(200 470)"><g id="a-sh"><path d="M0 0V-170" stroke="#5D625E" stroke-width="34"/><path d="M0 0V-170" stroke="#D2C2A7" stroke-opacity=".5" stroke-width="3"/><path d="M0 -20V-110" stroke="#D2C2A7" stroke-width="8"/>
+        <g transform="translate(0 -170)"><g id="a-el"><path d="M0 0V-140" stroke="#5D625E" stroke-width="26"/><path d="M0 0V-140" stroke="#D2C2A7" stroke-opacity=".5" stroke-width="3"/>
+          <g transform="translate(0 -140)"><g id="a-wr"><path d="M0 0V-46" stroke="#D2C2A7" stroke-width="12"/><path d="M-16 -46H16M-16 -46V-72M16 -46V-72" fill="none" stroke="#27DBDB" stroke-width="7"/></g><circle r="14" fill="#0F2D38" stroke="#BA644E" stroke-width="6"/></g>
+        </g><circle r="18" fill="#0F2D38" stroke="#A89D89" stroke-width="6"/></g>
+      </g><circle r="24" fill="#0F2D38" stroke="#D2C2A7" stroke-width="7"/></g></svg>`;
     document.body.prepend(d);
     const sh = d.querySelector('#a-sh'), el = d.querySelector('#a-el'), wr = d.querySelector('#a-wr');
     const cur = POSES[0].slice(); let sp = 0;
